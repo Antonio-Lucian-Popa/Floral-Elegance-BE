@@ -7,6 +7,7 @@ import com.asusoftware.FloralElegance.service.FlowerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +25,14 @@ public class AdminController {
     public ResponseEntity<FlowerDto> createFlower(@RequestBody FlowerDto flowerDto) {
         return ResponseEntity.ok(flowerService.create(flowerDto));
     }
+
+    @PostMapping("/flowers/{id}/upload")
+    public ResponseEntity<String> uploadFlowerImage(@PathVariable UUID id,
+                                                    @RequestParam("file") MultipartFile file) {
+        String imageUrl = flowerService.uploadImage(id, file);
+        return ResponseEntity.ok(imageUrl);
+    }
+
 
     @PutMapping("/flowers/{id}")
     public ResponseEntity<FlowerDto> updateFlower(@PathVariable UUID id, @RequestBody FlowerDto flowerDto) {

@@ -1,5 +1,6 @@
 package com.asusoftware.FloralElegance.service;
 
+import com.asusoftware.FloralElegance.exception.FileStorageException;
 import com.asusoftware.FloralElegance.model.Flower;
 import com.asusoftware.FloralElegance.model.dto.FlowerDto;
 import com.asusoftware.FloralElegance.model.dto.mapper.FlowerMapper;
@@ -7,7 +8,12 @@ import com.asusoftware.FloralElegance.repository.FlowerRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,6 +77,30 @@ public class FlowerService {
         flower.setPrice(dto.getPrice());
         flower.setTag(dto.getTag());
         return flowerMapper.toDto(flowerRepository.save(flower));
+    }
+
+    public String uploadImage(UUID flowerId, MultipartFile file) {
+        try {
+            Flower flower = flowerRepository.findById(flowerId)
+                    .orElseThrow(() -> new RuntimeException("Flower not found"));
+
+            String folderPath = "src/main/resources/static/images/flowers/";
+            Files.createDirectories(Paths.get(folderPath));
+
+            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path fullPath = Paths.get(folderPath + filename);
+
+            Files.write(fullPath, file.getBytes());
+            String imageUrl = "/images/flowers/" + filename;
+
+            flower.setImage(imageUrl);
+            flowerRepository.save(flower);
+
+            return imageUrl;
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to save image: " + e.getMessage());
+        }
+
     }
 
     public void delete(UUID id) {

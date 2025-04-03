@@ -1,6 +1,7 @@
 package com.asusoftware.FloralElegance.service;
 
 import com.asusoftware.FloralElegance.config.JwtUtil;
+import com.asusoftware.FloralElegance.exception.NotFoundException;
 import com.asusoftware.FloralElegance.model.Decoration;
 import com.asusoftware.FloralElegance.model.Flower;
 import com.asusoftware.FloralElegance.model.Order;
@@ -54,6 +55,12 @@ public class OrderService {
 
         double total = flower.getPrice() + (decoration != null ? decoration.getPrice() : 0);
 
+        LocalDateTime deliveryDate = LocalDateTime.parse(dto.getDeliveryDate());
+
+        if (deliveryDate.isBefore(LocalDateTime.now())) {
+            throw new NotFoundException("Delivery date must be in the future");
+        }
+
         Order order = Order.builder()
                 .flower(flower)
                 .decoration(decoration)
@@ -71,7 +78,7 @@ public class OrderService {
 
     public boolean cancel(UUID orderId, UUID userId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new NotFoundException("Order not found"));
 
         if (!order.getUserId().equals(userId)) {
             throw new RuntimeException("Unauthorized to cancel this order");
