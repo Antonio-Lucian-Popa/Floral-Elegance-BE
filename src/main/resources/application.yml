@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/flowerdb
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://antonio-dev.go.ro:8081/keycloak-app/realms/floral-elegance-realm
+
+keycloak:
+  realm: floral-elegance-realm
+  resource: floral-elegance-backend
+  # auth-server-url: http://antonio-dev.go.ro:8081/keycloack-app/realms/gym-management-realm/protocol/openid-connect/auth
+  auth-server-url: http://antonio-dev.go.ro:8081/keycloak-app/
+  credentials:
+    secret: L3yA6H7727COcpR01RGR6JRO0CKFMQDZ
+  admin:
+    username: admin
+    password: admin
