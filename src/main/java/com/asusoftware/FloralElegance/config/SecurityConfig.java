@@ -24,7 +24,7 @@ public class SecurityConfig {
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String issuerUri;
 
-    @Value("${cors.allowedOrigins}")
+    @Value("${cors.allowed-origins}")
     private String allowedOrigins;
 
     @Bean
